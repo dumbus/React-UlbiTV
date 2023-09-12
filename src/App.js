@@ -14,36 +14,27 @@ function App() {
     {id: 4, title:'JavaScript 4', description: 'JavaScript - Язык программирования'},
     {id: 5, title:'JavaScript 5', description: 'JavaScript - Язык программирования'}
   ]);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [post, setPost] = useState({title: '', description: ''});
 
   const addNewPost = (e) => {
     e.preventDefault();
 
-    const newPost = {
-      id: Date.now(),
-      title,
-      description
-    };
-
-    setPosts([...posts, newPost]);
-    
-    setTitle('');
-    setDescription('');
+    setPosts([...posts, {...post, id: Date.now()}]);
+    setPost({title: '', description: ''});
   };
 
   return (
     <div className='App'>
       <form>
         <MyInput 
-          value={title}
-          onChange={e => setTitle(e.target.value)}
+          value={post.title}
+          onChange={e => setPost({...post, title: e.target.value})}
           type='text' 
           placeholder='Название поста' 
         />
         <MyInput 
-          value={description}
-          onChange={e => setDescription(e.target.value)}
+          value={post.description}
+          onChange={e => setPost({...post, description: e.target.value})}
           type='text' 
           placeholder='Описание поста' 
         />
