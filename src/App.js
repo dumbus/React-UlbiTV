@@ -16,10 +16,10 @@ function App() {
   ]);
   const [title, setTitle] = useState('');
   
-  // const descriptionInputRef = useRef();
+  const descriptionInputRef = useRef();
 
   const addNewPost = (e) => {
-    // e.preventDefault();
+    e.preventDefault();
   };
 
   return (
@@ -32,12 +32,12 @@ function App() {
           type='text' 
           placeholder='Название поста' 
         />
-        {/* Неуправляемый элемент
+        {/* Неуправляемый компонент */}
         <MyInput 
           ref={descriptionInputRef}
           type='text' 
           placeholder='Описание поста' 
-        /> */}
+        />
         <MyButton onClick={addNewPost}>Создать пост</MyButton>
       </form>
       <PostList posts={posts} title='Посты про JavaScript' />
