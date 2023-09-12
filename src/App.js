@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 
 import './styles/App.css';
 
@@ -15,26 +15,35 @@ function App() {
     {id: 5, title:'JavaScript 5', description: 'JavaScript - Язык программирования'}
   ]);
   const [title, setTitle] = useState('');
-  
-  const descriptionInputRef = useRef();
+  const [description, setDescription] = useState('');
 
   const addNewPost = (e) => {
     e.preventDefault();
+
+    const newPost = {
+      id: Date.now(),
+      title,
+      description
+    };
+
+    setPosts([...posts, newPost]);
+    
+    setTitle('');
+    setDescription('');
   };
 
   return (
     <div className='App'>
       <form>
-        {/* Управляемый компонент */}
         <MyInput 
           value={title}
           onChange={e => setTitle(e.target.value)}
           type='text' 
           placeholder='Название поста' 
         />
-        {/* Неуправляемый компонент */}
         <MyInput 
-          ref={descriptionInputRef}
+          value={description}
+          onChange={e => setDescription(e.target.value)}
           type='text' 
           placeholder='Описание поста' 
         />
