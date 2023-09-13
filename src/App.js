@@ -7,6 +7,7 @@ import PostForm from './components/PostForm';
 import PostFilter from './components/PostFilter';
 import MyModal from './components/UI/modal/MyModal';
 import MyButton from './components/UI/button/MyButton';
+import MyLoader from './components/UI/loader/MyLoader';
 
 import PostService from './API/PostService';
 
@@ -16,12 +17,15 @@ function App() {
   const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState({sort: '', query: ''});
   const [modal, setModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const sortedAndFilteredPosts = usePosts(posts, filter.sort, filter.query);
 
   const fetchPosts = async () => {
+    setLoading(true);
     const posts = await PostService.getAllPosts();
     setPosts(posts);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -49,7 +53,11 @@ function App() {
         filter={filter}
         setFilter={setFilter}
       />
-      <PostList posts={sortedAndFilteredPosts} title='Посты про JavaScript' deletePost={deletePost} />
+      {
+        loading
+        ? <div style={{display: 'flex', justifyContent: 'center', marginTop: '50px'}}><MyLoader /></div>
+        : <PostList posts={sortedAndFilteredPosts} title='Посты про JavaScript' deletePost={deletePost} />
+      }
     </div>
   );
 }
