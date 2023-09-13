@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import './styles/App.css';
 
@@ -8,20 +8,25 @@ import PostFilter from './components/PostFilter';
 import MyModal from './components/UI/modal/MyModal';
 import MyButton from './components/UI/button/MyButton';
 
+import PostService from './API/PostService';
+
 import { usePosts } from './hooks/usePosts';
 
 function App() {
-  const [posts, setPosts] = useState([
-    {id: 1, title:'JavaScript', description: 'JavaScript - Язык программирования 5'},
-    {id: 2, title:'JavaScript 2', description: 'JavaScript - Язык программирования 4'},
-    {id: 3, title:'JavaScript 3', description: 'JavaScript - Язык программирования 3'},
-    {id: 4, title:'JavaScript 4', description: 'JavaScript - Язык программирования 2'},
-    {id: 5, title:'JavaScript 5', description: 'JavaScript - Язык программирования 1'}
-  ]);
+  const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState({sort: '', query: ''});
   const [modal, setModal] = useState(false);
 
   const sortedAndFilteredPosts = usePosts(posts, filter.sort, filter.query);
+
+  const fetchPosts = async () => {
+    const posts = await PostService.getAllPosts();
+    setPosts(posts);
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
