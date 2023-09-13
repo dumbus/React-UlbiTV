@@ -5,6 +5,8 @@ import './styles/App.css';
 import PostList from './components/PostList';
 import PostForm from './components/PostForm';
 import PostFilter from './components/PostFilter';
+import MyModal from './components/UI/modal/MyModal';
+import MyButton from './components/UI/button/MyButton';
 
 function App() {
   const [posts, setPosts] = useState([
@@ -15,9 +17,11 @@ function App() {
     {id: 5, title:'JavaScript 5', description: 'JavaScript - Язык программирования 1'}
   ]);
   const [filter, setFilter] = useState({sort: '', query: ''});
+  const [modal, setModal] = useState(false);
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
+    setModal(false);
   };
 
   const deletePost = (post) => {
@@ -38,16 +42,17 @@ function App() {
 
   return (
     <div className='App'>
-      <PostForm createPost={createPost} />
+      <MyButton style={{marginTop: '30px'}} onClick={() => setModal(true)} >Создать пост</MyButton>
+      <MyModal visible={modal} setVisible={setModal}>
+        <h1>Добавление нового поста</h1>
+        <PostForm createPost={createPost} />
+      </MyModal>
       <hr style={{margin: '15px 0'}} />
       <PostFilter
         filter={filter}
         setFilter={setFilter}
       />
-      {sortedAndFilteredPosts.length !== 0
-        ? <PostList posts={sortedAndFilteredPosts} title='Посты про JavaScript' deletePost={deletePost} />
-        : <h1 style={{textAlign: 'center'}}>Посты не найдены</h1>
-      }
+      <PostList posts={sortedAndFilteredPosts} title='Посты про JavaScript' deletePost={deletePost} />
     </div>
   );
 }
