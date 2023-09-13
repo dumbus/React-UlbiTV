@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import './styles/App.css';
 
@@ -6,6 +6,7 @@ import PostList from './components/PostList';
 import PostForm from './components/PostForm';
 
 import MySelect from './components/UI/select/MySelect';
+import MyInput from './components/UI/input/MyInput';
 
 function App() {
   const [posts, setPosts] = useState([
@@ -16,6 +17,7 @@ function App() {
     {id: 5, title:'JavaScript 5', description: 'JavaScript - Язык программирования 1'}
   ]);
   const [selectedSort, setSelectedSort] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
@@ -25,9 +27,20 @@ function App() {
     setPosts(posts.filter(p => p.id !== post.id));
   };
 
+  const sortedPosts = useMemo(() => {
+    if (selectedSort) {
+      return [...posts].sort((a, b) => a[selectedSort].localeCompare(b[selectedSort]));
+    }
+
+    return posts;
+  }, [selectedSort, posts]);
+
+  const sortedAndFilteredPosts = useMemo(() => {
+    return sortedPosts.filter(post => post.title.toLowerCase().includes(searchQuery));
+  }, [searchQuery, sortedPosts]);
+
   const sortPosts = (sort) => {
     setSelectedSort(sort);
-    setPosts([...posts].sort((a, b) => a[sort].localeCompare(b[sort])));
   };
 
   return (
@@ -35,6 +48,11 @@ function App() {
       <PostForm createPost={createPost} />
       <hr style={{margin: '15px 0'}} />
       <div>
+        <MyInput 
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder='Поиск'
+        />
         <MySelect 
           value={selectedSort}
           onChange={sortPosts}
@@ -45,9 +63,9 @@ function App() {
           ]}
         />
       </div>
-      {posts.length !== 0
-        ? <PostList posts={posts} title='Посты про JavaScript' deletePost={deletePost} />
-        : <h1 style={{textAlign: 'center'}}>Посты по теме не найдены</h1>
+      {sortedAndFilteredPosts.length !== 0
+        ? <PostList posts={sortedAndFilteredPosts} title='Посты про JavaScript' deletePost={deletePost} />
+        : <h1 style={{textAlign: 'center'}}>Посты не найдены</h1>
       }
     </div>
   );
