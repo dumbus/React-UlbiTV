@@ -8,6 +8,8 @@ import PostFilter from './components/PostFilter';
 import MyModal from './components/UI/modal/MyModal';
 import MyButton from './components/UI/button/MyButton';
 
+import { usePosts } from './hooks/usePosts';
+
 function App() {
   const [posts, setPosts] = useState([
     {id: 1, title:'JavaScript', description: 'JavaScript - Язык программирования 5'},
@@ -19,6 +21,8 @@ function App() {
   const [filter, setFilter] = useState({sort: '', query: ''});
   const [modal, setModal] = useState(false);
 
+  const sortedAndFilteredPosts = usePosts(posts, filter.sort, filter.query);
+
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
     setModal(false);
@@ -27,18 +31,6 @@ function App() {
   const deletePost = (post) => {
     setPosts(posts.filter(p => p.id !== post.id));
   };
-
-  const sortedPosts = useMemo(() => {
-    if (filter.sort) {
-      return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]));
-    }
-
-    return posts;
-  }, [filter.sort, posts]);
-
-  const sortedAndFilteredPosts = useMemo(() => {
-    return sortedPosts.filter(post => post.title.toLowerCase().includes(filter.query));
-  }, [filter.query, sortedPosts]);
 
   return (
     <div className='App'>
