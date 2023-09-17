@@ -12,21 +12,19 @@ import MyLoader from './components/UI/loader/MyLoader';
 import PostService from './API/PostService';
 
 import { usePosts } from './hooks/usePosts';
+import { useFetching } from './hooks/useFetching';
 
 function App() {
   const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState({sort: '', query: ''});
   const [modal, setModal] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const sortedAndFilteredPosts = usePosts(posts, filter.sort, filter.query);
-
-  const fetchPosts = async () => {
-    setLoading(true);
+  const [fetchPosts, loading, error] = useFetching(async () => {
     const posts = await PostService.getAllPosts();
     setPosts(posts);
-    setLoading(false);
-  };
+  });
+
+  const sortedAndFilteredPosts = usePosts(posts, filter.sort, filter.query);
 
   useEffect(() => {
     fetchPosts();
@@ -53,6 +51,7 @@ function App() {
         filter={filter}
         setFilter={setFilter}
       />
+      {error && <h1>Произошла ошибка: {error}</h1>}
       {
         loading
         ? <div style={{display: 'flex', justifyContent: 'center', marginTop: '50px'}}><MyLoader /></div>
