@@ -1,7 +1,7 @@
-import { getPagesArray } from '../../../utils/pages';
+import { usePages } from '../../../hooks/usePages';
 
 const Pagination = ({totalPages, page, changePage}) => {
-  let pagesArray = getPagesArray(totalPages);
+  let pagesArray = usePages(totalPages);
 
   return (
     <div className='page__wrapper'>
