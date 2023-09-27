@@ -5,8 +5,14 @@ import { publicRoutes, privateRoutes } from '../router';
 
 import { AuthContext } from '../context';
 
+import MyLoader from './UI/loader/MyLoader';
+
 const AppRouter = () => {
-  const { auth } = useContext(AuthContext);
+  const { auth, loading } = useContext(AuthContext);
+
+  if (loading) {
+    return <MyLoader />;
+  }
 
   return (
     auth
@@ -20,7 +26,7 @@ const AppRouter = () => {
             exact={route.exact}
           />
         )}
-        <Route path='*' element={<Navigate to='/error' replace />} />
+        <Route path='*' element={<Navigate to='/posts' replace />} />
       </Routes>
       :
       <Routes>
