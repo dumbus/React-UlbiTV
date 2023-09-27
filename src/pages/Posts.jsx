@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 import '../styles/App.css';
 
@@ -14,6 +14,7 @@ import PostService from '../API/PostService';
 
 import { usePosts } from '../hooks/usePosts';
 import { useFetching } from '../hooks/useFetching';
+import useObserver from '../hooks/useObserver';
 
 import { getPagesCount } from '../utils/pages';
 
@@ -23,11 +24,12 @@ function Posts() {
   const [modal, setModal] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [limit, setLimit] = useState(10);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
+  const lastElement = useRef();
 
   const [fetchPosts, loading, error] = useFetching(async () => {
     const response = await PostService.getAllPosts(limit, page);
-    setPosts(response.data);
+    setPosts([...posts, ...response.data]);
 
     const totalCount  = response.headers['x-total-count'];
     setTotalPages(getPagesCount(totalCount, limit));
@@ -35,8 +37,12 @@ function Posts() {
 
   const sortedAndFilteredPosts = usePosts(posts, filter.sort, filter.query);
 
+  useObserver(lastElement, loading, page < totalPages, () => {
+    setPage(page + 1);
+  });
+
   useEffect(() => {
-    fetchPosts();
+    fetchPosts(limit, page);
   }, [page]);
 
   const createPost = (newPost) => {
@@ -67,9 +73,10 @@ function Posts() {
       {error && <h1>Произошла ошибка: {error}</h1>}
       {
         loading
-        ? <div style={{display: 'flex', justifyContent: 'center', marginTop: '50px'}}><MyLoader /></div>
-        : <PostList posts={sortedAndFilteredPosts} title='Посты про JavaScript' deletePost={deletePost} />
+        && <div style={{display: 'flex', justifyContent: 'center', marginTop: '50px'}}><MyLoader /></div>
       }
+      <PostList posts={sortedAndFilteredPosts} title='Посты про JavaScript' deletePost={deletePost} />
+      <div ref={lastElement} style={{height: '20px', background: 'gray'}} />
       <Pagination 
         page={page} 
         changePage={changePage} 
